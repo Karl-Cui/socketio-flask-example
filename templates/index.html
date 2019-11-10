@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <title>Chat app</title>
+  </head>
+  <body>
+
+    <div class="message_holder"></div>
+
+    <form action="" method="POST">
+      <input type="text" class="message" placeholder="Messages"/>
+      <input type="submit"/>
+    </form>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+    <script type="text/javascript">
+
+      // create socket
+      var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+      socket.on( 'connect', function() {
+
+        // when a user submits a message, emit event "user message event" with the message in the "data" field
+        var form = $( 'form' ).on( 'submit', function( e ) {
+          e.preventDefault()
+          let user_input = $( 'input.message' ).val()
+
+          // message to emit
+          socket.emit( 'user message event', {
+            data : user_input
+          } )
+
+          $( 'input.message' ).val( '' ).focus()
+        } )
+
+      } )
+
+      // when the client receives a "test response", append the message to the page
+      socket.on( 'test response', function( msg ) {
+        console.log( msg )
+        $( 'div.message_holder' ).append( '<div>' + msg.data + '</div>' )
+      })
+
+    </script>
+
+  </body>
+  </html>
